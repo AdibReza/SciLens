@@ -1,10 +1,22 @@
+# Python virtual environments
 .venv/
-__pycache__/
+venv/
+env/
+
+# Jupyter
 .ipynb_checkpoints/
+nb_checkpoints/
 
-data/processed/
+# Data
 data/raw/
+data/processed/
 
+# Model results and checkpoints
 results/
+
+# Environment variables and secrets
 .env
+.env.*
+
+# System files
 .DS_Store

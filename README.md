@@ -1,41 +1,49 @@
 # SciLens
 ### Multimodal Scientific Question Answering Through Visual and Textual Reasoning
 
-**SciLens** is a multimodal AI research project that explores how combining textual and visual information can improve scientific question answering. Using the ScienceQA-IMG dataset, the project investigates how different multimodal fusion strategies influence a model's ability to understand questions, interpret images, and select correct answers.
+**SciLens** is a multimodal AI research project investigating how textual and visual information can be combined to answer scientific questions. Using the ScienceQA-IMG dataset, the project compares text-only and multimodal deep learning architectures to understand how different fusion strategies influence scientific question-answering performance.
 
 ## Project Overview
 
-Scientific questions often require more than textual understanding. Some questions rely on diagrams, illustrations, charts, or other visual information to reach the correct answer.
+Scientific questions can require both language understanding and visual interpretation of diagrams, illustrations, and other images.
 
-SciLens explores this challenge by developing and comparing three deep learning approaches:
+SciLens investigates this challenge through four model configurations:
 
-1. **Text-only Baseline (BERT):** Uses textual information from questions and answer choices without considering images.
-2. **Early Fusion:** Combines text representations from BERT with visual representations from Vision Transformer (ViT) before answer prediction.
-3. **Intermediate Fusion:** Explores interaction between textual and visual representations through attention-based fusion.
+1. **Text-only BERT:** Uses question and answer-choice text without image information.
+2. **Early Fusion V2:** Combines BERT and ViT representations through feature concatenation, with a frozen ViT encoder.
+3. **Early Fusion V3:** Uses trainable upper layers of both encoders and combines textual and visual representations.
+4. **Intermediate Fusion V1:** Uses text-to-image cross-attention to enable interaction between textual tokens and image patch representations.
 
-The objective is to evaluate whether multimodal learning provides an advantage over text-only approaches and understand how different fusion strategies affect performance.
+The primary objective is to evaluate whether visual information improves answer prediction and compare the effectiveness of different multimodal fusion approaches.
 
 ## Research Objectives
 
-- Develop a reliable text-only baseline for scientific question answering.
-- Investigate early and intermediate multimodal fusion strategies.
+- Establish a text-only scientific question-answering baseline.
+- Develop early and intermediate multimodal fusion architectures.
 - Evaluate the contribution of visual information to answer prediction.
-- Compare model performance using consistent experimental settings.
-- Analyse model behaviour across different scientific subjects and grade levels.
+- Compare model performance using consistent evaluation metrics.
+- Examine classification errors and limitations across the evaluated models.
 
 ## Dataset
 
-This project uses the **ScienceQA-IMG** dataset from Hugging Face.
+This project uses the **ScienceQA-IMG** dataset.
 
-- **Source:** [lmms-lab/ScienceQA-IMG](https://huggingface.co/datasets/lmms-lab/ScienceQA-IMG)
+- **Source:** [Hugging Face – ScienceQA-IMG](https://huggingface.co/datasets/lmms-lab/ScienceQA-IMG)
 - **Original training samples:** 6,218
 - **Original validation samples:** 2,097
 - **Original test samples:** 2,017
-- **Total:** 10,332 samples
+- **Original total:** 10,332
 
-The dataset contains scientific questions, answer choices, images, labels, and additional contextual information.
+After data cleaning and cross-split duplicate removal, the working dataset contains:
 
-Data preprocessing includes text tokenisation, image transformation, answer formatting, and cross-split duplicate checking.
+| Split | Cleaned samples |
+|---|---:|
+| Training | 3,530 |
+| Validation | 1,343 |
+| Testing | 2,017 |
+| **Total** | **6,890** |
+
+The original test split was retained unchanged. Preprocessing includes text tokenisation, image transformation, answer-choice formatting, and the preparation of attention and option masks.
 
 ## Technology Stack
 
@@ -43,12 +51,12 @@ Data preprocessing includes text tokenisation, image transformation, answer form
 |---|---|
 | Programming Language | Python |
 | Deep Learning Framework | PyTorch |
-| Text Encoder | BERT |
-| Image Encoder | Vision Transformer (ViT) |
-| Dataset Management | Hugging Face Datasets |
+| Text Encoder | BERT (`bert-base-uncased`) |
+| Image Encoder | Vision Transformer (`google/vit-base-patch16-224`) |
+| Dataset | Hugging Face Datasets |
 | Model Libraries | Hugging Face Transformers |
 | Experimentation | Jupyter Notebook |
-| GPU Acceleration | Apple MPS / Google Colab CUDA |
+| GPU Acceleration | Apple MPS / CUDA |
 
 ## Project Structure
 
@@ -59,7 +67,9 @@ SciLens/
 │   ├── 01_dataset_exploration.ipynb
 │   ├── 02_data_preprocessing.ipynb
 │   ├── 03_text_only_baseline.ipynb
-│   └── 04_early_fusion.ipynb
+│   ├── 04_early_fusion.ipynb
+│   ├── 05_intermediate_fusion.ipynb
+│   └── 06_model_evaluation.ipynb
 │
 ├── data/
 │   ├── raw/
@@ -73,108 +83,3 @@ SciLens/
 │
 ├── .gitignore
 └── README.md
-```
-
-Large datasets, processed tensors, model checkpoints, and generated results are excluded from the Git repository.
-
-## Experimental Methodology
-
-The experiments follow a comparative approach:
-
-**1. Data Exploration and Preparation**
-
-Explore the dataset, inspect image and text distributions, identify missing or invalid records, and remove cross-split duplicates.
-
-**2. Text-only Baseline**
-
-Develop a BERT-based model using question and answer-choice representations to establish a baseline.
-
-**3. Early Fusion**
-
-Extract textual and visual representations independently, concatenate them, and use a trainable classifier to predict the correct answer.
-
-**4. Intermediate Fusion**
-
-Investigate attention-based interaction between question representations and image patch embeddings.
-
-**5. Model Evaluation**
-
-Compare models using validation and test accuracy, cross-entropy loss, and additional evaluation measures.
-
-## Getting Started
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/SciLens.git
-cd SciLens
-```
-
-### 2. Create a Virtual Environment
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
-pip install torch torchvision transformers datasets accelerate scikit-learn tqdm jupyter
-```
-
-### 4. Launch Jupyter Notebook
-
-```bash
-jupyter notebook
-```
-
-### 5. Load the Dataset
-
-The dataset can be loaded directly from Hugging Face:
-
-```python
-from datasets import load_dataset
-
-dataset = load_dataset("lmms-lab/ScienceQA-IMG")
-```
-
-### 6. Run the Experiments
-
-Execute the notebooks in numerical order, beginning with dataset exploration and preprocessing.
-
-For GPU training, the notebooks can also be executed using Google Colab with a compatible GPU runtime.
-
-## Evaluation Metrics
-
-The project investigates model performance through:
-
-- Accuracy
-- Cross-entropy loss
-- Calibration
-- Subject-wise performance
-- Grade-wise performance
-- Image-shuffling diagnostics
-
-Validation data is used for model selection, while the test set is reserved for final evaluation.
-
-## Research Scope
-
-SciLens focuses on understanding the effectiveness of visual and textual information in scientific question answering. Rather than assuming that multimodal models will always outperform text-only models, the project evaluates the actual contribution of visual features under different fusion architectures.
-
-## Project Status
-
-**Status:** Research and development in progress.
-
-The text-only baseline and initial early-fusion experiments have been developed. Further experiments focus on improving multimodal fusion and conducting comparative evaluation.
-
-## Acknowledgements
-
-- [ScienceQA-IMG Dataset](https://huggingface.co/datasets/lmms-lab/ScienceQA-IMG)
-- [Hugging Face](https://huggingface.co/)
-- [PyTorch](https://pytorch.org/)
-- [Google Colab](https://colab.research.google.com/)
-
----
-
-**SciLens — Seeing science. Understanding questions. Reasoning with AI.**
